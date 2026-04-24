@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Сборщик интернет-заказов</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: Impact, Arial Black, Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255,0,170,.45), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(255,90,0,.45), transparent 35%),
+    linear-gradient(135deg, #09000f, #170020 45%, #070007);
+  color: #fff;
+  overflow-x: hidden;
+}
+
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-img {
+  position: absolute;
+  width: 170px;
+  border-radius: 24px;
+  opacity: .2;
+  filter: saturate(1.25);
+  box-shadow: 0 0 35px #ff00d4;
+  pointer-events: none;
+}
+
+.i1 { top: 3%; left: -35px; transform: rotate(-12deg); }
+.i2 { top: 5%; right: -35px; transform: rotate(10deg); }
+.i3 { bottom: 7%; left: -30px; transform: rotate(9deg); }
+.i4 { bottom: 5%; right: -25px; transform: rotate(-8deg); }
+
+.card {
+  position: relative;
+  width: min(1080px, 100%);
+  min-height: 94vh;
+  border: 2px solid rgba(255, 0, 220, .75);
+  border-radius: 34px;
+  padding: 20px;
+  background: rgba(8, 3, 15, .86);
+  box-shadow:
+    0 0 35px rgba(255,0,220,.65),
+    inset 0 0 30px rgba(255,255,255,.06);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.badge {
+  width: fit-content;
+  margin: 0 auto 10px;
+  padding: 9px 24px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff00cc, #ff6a00);
+  box-shadow: 0 0 25px #ff00cc;
+  font-size: clamp(18px, 3vw, 28px);
+  letter-spacing: 1px;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(42px, 10vw, 92px);
+  line-height: .86;
+  color: #fff;
+  text-shadow:
+    4px 4px 0 #370020,
+    0 0 20px #ff00cc,
+    0 0 45px #ff00cc;
+}
+
+h1 span {
+  display: block;
+  color: #ffd21f;
+  text-shadow:
+    4px 4px 0 #5c1300,
+    0 0 25px #ff6a00;
+}
+
+.offer {
+  margin: 16px auto;
+  width: min(790px, 100%);
+  padding: 14px;
+  border-radius: 22px;
+  background: linear-gradient(90deg, #ffcc00, #ff3b00);
+  color: #120000;
+  text-align: center;
+  font-size: clamp(25px, 6vw, 52px);
+  box-shadow: 0 0 28px #ff6a00;
+  border: 3px solid #fff3a0;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.benefits {
+  display: grid;
+  gap: 12px;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,0,200,.15));
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: inset 0 0 18px rgba(255,255,255,.05);
+  font-size: clamp(18px, 3.5vw, 30px);
+}
+
+.icon {
+  min-width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ff00cc, #ff7a00);
+  box-shadow: 0 0 18px #ff00cc;
+}
+
+.visual {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(0,0,0,.05), rgba(0,0,0,.38)),
+    url("img/2.png") center center / contain no-repeat;
+  background-color: #120018;
+  min-height: 330px;
+  border: 2px solid rgba(255,255,255,.22);
+  box-shadow: 0 0 25px rgba(255,0,200,.45);
+}
+
+.visual::after {
+  content: "ВАКАНСИЯ ГОРЯЩАЯ";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  padding: 14px;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(0,0,0,.78);
+  color: #fff;
+  font-size: clamp(22px, 4vw, 38px);
+  text-shadow: 0 0 15px #ff00cc;
+  border: 2px solid #ff00cc;
+}
+
+.cta-box {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.main-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 24px;
+  padding: 19px;
+  font-family: inherit;
+  font-size: clamp(28px, 6vw, 58px);
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ff003c, #ff8c00, #ff00cc);
+  box-shadow: 0 0 35px #ff0055;
+  text-shadow: 3px 3px 0 #4b0000;
+  animation: pulse 1.25s infinite;
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.links a,
+.links button {
+  text-decoration: none;
+  color: #fff;
+  text-align: center;
+  padding: 15px 8px;
+  border-radius: 17px;
+  font-size: clamp(16px, 3vw, 24px);
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: inset 0 0 14px rgba(255,255,255,.08), 0 0 16px rgba(255,255,255,.12);
+}
+
+.tg { background: linear-gradient(135deg,#179cde,#005eff)!important; }
+.vk { background: linear-gradient(135deg,#4c75a3,#174d99)!important; }
+.max { background: linear-gradient(135deg,#ff8c00,#ff2d00)!important; }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.84);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.form {
+  width: min(440px, 100%);
+  background:
+    radial-gradient(circle at top, rgba(255,0,200,.22), transparent 35%),
+    #120018;
+  border: 2px solid #ff00cc;
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: 0 0 40px #ff00cc;
+}
+
+.form h2 {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: 34px;
+}
+
+.form input,
+.form select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: #22002d;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+}
+
+.form input::placeholder {
+  color: rgba(255,255,255,.65);
+}
+
+.form button {
+  width: 100%;
+  padding: 15px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(90deg,#ff00cc,#ff6a00);
+  color: white;
+  font-family: inherit;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.close {
+  margin-top: 10px;
+  background: #333 !important;
+}
+
+.notice {
+  margin-top: 10px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,.72);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: none;
+  max-width: 92%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(0,0,0,.86);
+  border: 1px solid #ff00cc;
+  box-shadow: 0 0 25px rgba(255,0,204,.65);
+  color: white;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 8px;
+    align-items: flex-start;
+  }
+
+  .card {
+    min-height: 100vh;
+    border-radius: 22px;
+    padding: 13px;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .visual {
+    min-height: 185px;
+    background-position: center top;
+    background-size: contain;
+  }
+
+  .links {
+    grid-template-columns: 1fr;
+  }
+
+  .bg-img {
+    width: 120px;
+    opacity: .14;
+  }
+
+  .benefit {
+    padding: 10px;
+  }
+
+  .icon {
+    min-width: 40px;
+    height: 40px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+  <img class="bg-img i1" src="img/1.png" alt="">
+  <img class="bg-img i2" src="img/3.png" alt="">
+  <img class="bg-img i3" src="img/4.png" alt="">
+  <img class="bg-img i4" src="img/5.png" alt="">
+
+  <main class="card">
+    <div class="badge">ВАКАНСИЯ ОТКРЫТА</div>
+
+    <h1>
+      СБОРЩИК
+      <span>ИНТЕРНЕТ-ЗАКАЗОВ</span>
+    </h1>
+
+    <div class="offer">
+      ДО 110 000 ₽ / МЕСЯЦ
+    </div>
+
+    <section class="content">
+      <div class="benefits">
+        <div class="benefit"><div class="icon">⏱</div>СМЕНЫ 6–8 ЧАСОВ</div>
+        <div class="benefit"><div class="icon">🎓</div>ОБУЧАЕМ С НУЛЯ</div>
+        <div class="benefit"><div class="icon">🏠</div>ПОМОЖЕМ С ЖИЛЬЕМ</div>
+        <div class="benefit"><div class="icon">💳</div>ВЫДАЕМ АВАНС</div>
+      </div>
+
+      <div class="visual"></div>
+    </section>
+
+    <section class="cta-box">
+      <button class="main-btn" onclick="openForm()">ЗАПОЛНИТЬ АНКЕТУ</button>
+
+      <div class="links">
+        <a class="tg" href="https://t.me/Annn_maro" target="_blank" rel="noopener">TELEGRAM</a>
+        <a class="vk" href="https://vk.com/id1108137371" target="_blank" rel="noopener">VK</a>
+        <button class="max" onclick="showMaxNumber()">MAX</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="form">
+    <h2>АНКЕТА</h2>
+
+    <input id="name" placeholder="Имя" autocomplete="name">
+    <input id="age" placeholder="Возраст" inputmode="numeric">
+    <input id="city" placeholder="Город">
+    <input id="contact" placeholder="Телефон / Telegram / VK">
+
+    <select id="messenger">
+      <option value="">Куда удобнее написать?</option>
+      <option value="Telegram">Telegram</option>
+      <option value="VK">VK</option>
+      <option value="MAX">MAX</option>
+      <option value="Телефон">Телефон</option>
+    </select>
+
+    <button id="sendBtn" onclick="sendForm()">ОТПРАВИТЬ АНКЕТУ</button>
+    <button class="close" onclick="closeForm()">ЗАКРЫТЬ</button>
+
+    <div class="notice">
+      После отправки менеджер свяжется с вами в ближайшее время.
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BOT_TOKEN = "8732934844:AAF1g5nZTvCQ0qTosAtJCIcSRnm9NkDlKm4";
+const CHAT_ID = "1803368969";
+
+const TELEGRAM_LINK = "https://t.me/Annn_maro";
+const VK_LINK = "https://vk.com/id1108137371";
+const MAX_PHONE = "995568866731";
+
+function openForm() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeForm() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function showToast(text) {
+  const toast = document.getElementById("toast");
+  toast.textContent = text;
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3500);
+}
+
+async function showMaxNumber() {
+  try {
+    await navigator.clipboard.writeText(MAX_PHONE);
+    showToast("MAX: " + MAX_PHONE + " — номер скопирован");
+  } catch (e) {
+    alert("MAX доступен по номеру:\n\n" + MAX_PHONE + "\n\nСкопируйте номер вручную.");
+  }
+}
+
+function cleanValue(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function resetForm() {
+  document.getElementById("name").value = "";
+  document.getElementById("age").value = "";
+  document.getElementById("city").value = "";
+  document.getElementById("contact").value = "";
+  document.getElementById("messenger").value = "";
+}
+
+function formatSourceLink() {
+  const href = window.location.href;
+  if (href.startsWith("file://")) {
+    return "Локальный файл (тест с компьютера)";
+  }
+  return window.location.hostname || href;
+}
+
+async function sendForm() {
+  const sendBtn = document.getElementById("sendBtn");
+
+  const name = cleanValue("name");
+  const age = cleanValue("age");
+  const city = cleanValue("city");
+  const contact = cleanValue("contact");
+  const messenger = document.getElementById("messenger").value;
+
+  if (!name || !age || !city || !contact || !messenger) {
+    showToast("Заполните все поля анкеты");
+    return;
+  }
+
+  if (Number(age) < 16 || Number(age) > 70) {
+    showToast("Проверьте возраст");
+    return;
+  }
+
+  const createdAt = new Date().toLocaleString("ru-RU");
+  const source = formatSourceLink();
+
+  const text =
+`🔥 <b>НОВАЯ АНКЕТА С САЙТА</b>
+
+<b>Кандидат:</b>
+👤 Имя: <b>${name}</b>
+🎂 Возраст: <b>${age}</b>
+🏙 Город: <b>${city}</b>
+📞 Контакт: <b>${contact}</b>
+💬 Удобная связь: <b>${messenger}</b>
+
+<b>Вакансия:</b> Сборщик интернет-заказов
+🕒 Время заявки: ${createdAt}
+🌐 Источник: ${source}`;
+
+  try {
+    sendBtn.disabled = true;
+    sendBtn.textContent = "ОТПРАВЛЯЕМ...";
+
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: text,
+        parse_mode: "HTML"
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(result.description || "Telegram error");
+    }
+
+    resetForm();
+    closeForm();
+    showToast("Анкета отправлена! Скоро с вами свяжутся.");
+
+  } catch (error) {
+    showToast("Ошибка отправки. Откройте Telegram напрямую.");
+    setTimeout(() => {
+      window.open(TELEGRAM_LINK, "_blank");
+    }, 900);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "ОТПРАВИТЬ АНКЕТУ";
+  }
+}
+
+document.getElementById("modal").addEventListener("click", function(event) {
+  if (event.target.id === "modal") {
+    closeForm();
+  }
+});
+</script>
+
+</body>
+</html>
